@@ -1,18 +1,49 @@
-/**
- * index.js — Lógica de la página de login
- */
+document.addEventListener("DOMContentLoaded", () => {
 
-/*Este script debe de gestionar el login de los usuarios.*/
+    const loginButton = document.getElementById("loginButton");
+    const registerButton = document.getElementById("newUserButton");
 
-/* Añadir las funciones que consideréis necesarias*/
+    // =========================
+    // LOGIN
+    // =========================
 
-    // Si hay un usuario logeado, redirigimos a la página indice de Pokemons
-    //...
+    loginButton.addEventListener("click", () => {
 
-    // Si no hay un usuario logeado, comprobamos datos de login
-    //...
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
 
-    // Al pulsar el boton redirigimos a la página de registro
-    //...
+        let users = JSON.parse(localStorage.getItem("users")) || [];
 
-    /* Añadir las funciones que consideréis necesarias*/
+        const userFound = users.find(
+            user =>
+                user.username === username &&
+                user.password === password
+        );
+
+        if (userFound) {
+
+            // guardar sessió
+            localStorage.setItem(
+                "currentUser",
+                JSON.stringify(userFound)
+            );
+
+            alert("Login correcte!");
+
+            window.location.href = "anime.html";
+
+        } else {
+            alert("Usuari o contrasenya incorrectes");
+        }
+
+    });
+
+    // =========================
+    // ANAR A REGISTRE
+    // =========================
+
+    registerButton.addEventListener("click", () => {
+        window.location.href = "registration.html";
+    });
+
+});
