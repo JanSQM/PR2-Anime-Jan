@@ -21,15 +21,23 @@ let currentUser;          // Objeto User del usuario logueado
 document.addEventListener('DOMContentLoaded', async function () {
 
     // Verificar autenticación
-    
+    const loggedUser = localStorage.getItem("loggedUser");
+
+if (!loggedUser) {
+    window.location.href = "index.html";
+}
 
     // Cargar usuario actual
-    
+    currentUser = new User();
+currentUser.loadFromStorage(loggedUser);
 
     showLoader(true);
 
     try {
         // Cargar géneros y anime (desde caché o API)
+
+allGenres = await loadGenres();
+allAnime = await loadAnimeList();
 
     } catch (err) {
         console.error('Error al cargar datos:', err);
@@ -49,13 +57,26 @@ document.addEventListener('DOMContentLoaded', async function () {
     applyFiltersAndRender();
 
     // Eventos de los controles de filtro
+document.getElementById("clearFiltersBtn")
+    .addEventListener("click", () => {
+        selectedGenres.clear();
 
+        document.getElementById("typeFilter").value = "";
+        document.getElementById("statusFilter").value = "";
+        document.getElementById("minScoreFilter").value = "";
+
+        applyFiltersAndRender();
+    });
 
     // Eventos de los botones de ordenamiento
 
 
     // Botón "Cargar más"
-    
+    document.getElementById("loadMoreBtn")
+    .addEventListener("click", () => {
+        displayedCount += ITEMS_PER_VIEW;
+        renderAnime();
+    });
 });
 
 /* =====================================================
@@ -162,3 +183,121 @@ function showLoader(visible) {
 
 
 /* Añadir las funciones que consideréis necesarias*/
+async function loadGenres() {
+
+    await delay(API_DELAY_MS);
+
+    const data = await fetchWithRateLimit(
+        `${API_BASE}/genres/anime`
+    );
+
+    return data.data;
+}
+
+async function loadAnimeList() {
+
+    let animeList = [];
+
+    for (let page = 1; page <= PAGES_TO_FETCH; page++) {
+
+        await delay(API_DELAY_MS);
+
+        const url =
+            `${API_BASE}/anime?order_by=popularity&sort=asc&limit=${ANIME_PER_PAGE}&page=${page}`;
+
+        const data = await fetchWithRateLimit(url);
+
+        animeList = animeList.concat(data.data);
+    }
+
+    return animeList;
+}
+
+function buildGenreFilters() {
+
+    const container =
+        document.getElementById("genreFilters");
+
+    container.innerHTML = "";
+
+    allGenres.slice(0, 15).forEach(genre => {
+
+        const btn = document.createElement("button");
+
+        btn.textContent = genre.name;
+
+        btn.classList.add("genre-btn");
+
+        btn.addEventListener("click", () => {
+
+            if (selectedGenres.has(genre.mal_id)) {
+                selectedGenres.delete(genre.mal_id);
+                btn.classList.remove("active");
+            } else {
+                selectedGenres.add(genre.mal_id);
+                btn.classList.add("active");
+            }
+
+            applyFiltersAndRender();
+        });
+
+        container.appendChild(btn);
+    });
+}
+
+function applyFiltersAndRender() {
+
+    filteredAnime = [...allAnime];
+
+    displayedCount = ITEMS_PER_VIEW;
+
+    renderAnime();
+}
+
+function renderAnime() {
+
+    const container =
+        document.getElementById("animeContainer");
+
+    container.innerHTML = "";
+
+    const visibleAnime =
+        filteredAnime.slice(0, displayedCount);
+
+    visibleAnime.forEach(anime => {
+
+        const card = createAnimeCard(anime);
+
+        container.appendChild(card);
+    });
+
+    const loadBtn =
+        document.getElementById("loadMoreBtn");
+
+    if (displayedCount < filteredAnime.length) {
+        loadBtn.style.display = "inline-block";
+    } else {
+        loadBtn.style.display = "none";
+    }
+
+    document.getElementById("resultCount").textContent =
+        `${filteredAnime.length} animes encontrados`;
+}
+
+function createAnimeCard(anime) {
+
+    const card = document.createElement("div");
+
+    card.classList.add("anime-card");
+
+    card.innerHTML = `
+        <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
+        <h3>${anime.title}</h3>
+        <p>⭐ ${anime.score || "N/A"}</p>
+    `;
+
+    return card;
+}
+
+function restoreFilters() {
+}

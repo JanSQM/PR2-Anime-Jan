@@ -30,7 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             alert("Login correcte!");
 
-            window.location.href = "anime.html";
+            localStorage.setItem("loggedUser", username);
+
+window.location.href = "anime.html";
 
         } else {
             alert("Usuari o contrasenya incorrectes");
@@ -43,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================
 
     registerButton.addEventListener("click", () => {
-        window.location.href = "registration.html";
+        window.location.href = "registro.html";
     });
 
 });
