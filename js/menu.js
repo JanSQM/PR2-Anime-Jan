@@ -1,22 +1,75 @@
 /**
  * menu.js — Gestión del menú de navegación
- * Controla dropdowns por click (no por hover, para evitar el problema del hueco).
- * Se incluye en todas las páginas autenticadas.
  */
 
 /**
- * Actualiza el menú con los datos del usuario actual:
- * nombre de usuario y contadores de listas.
+ * Actualiza el menú con los datos del usuario actual
  */
 function updateMenu() {
-    //...
+
+    const watching =
+        JSON.parse(localStorage.getItem("watching"))
+        || [];
+
+    const plan =
+        JSON.parse(localStorage.getItem("planToWatch"))
+        || [];
+
+    document.querySelectorAll(".watching-count")
+        .forEach(el => {
+            el.textContent = watching.length;
+        });
+
+    document.querySelectorAll(".plan-count")
+        .forEach(el => {
+            el.textContent = plan.length;
+        });
+
 }
 
 /**
- * Cierra la sesión del usuario y redirige al login.
+ * Cierra sesión
  */
 function logout() {
-    //...
+
+    localStorage.removeItem("currentUser");
+
+    window.location.href = "index.html";
 }
 
-/* Añadir las funciones que consideréis necesarias*/
+/* ===================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    updateMenu();
+
+    const logoutButton =
+        document.getElementById("logoutButton");
+
+    if (logoutButton) {
+
+        logoutButton.addEventListener("click", (e) => {
+
+            e.preventDefault();
+
+            logout();
+        });
+    }
+
+});
+
+const menuButton =
+    document.getElementById("menuButton");
+
+if (menuButton) {
+
+    menuButton.addEventListener("click", (e) => {
+
+        e.preventDefault();
+
+        const dropdown =
+            menuButton.nextElementSibling;
+
+        dropdown.classList.toggle("open");
+    });
+}

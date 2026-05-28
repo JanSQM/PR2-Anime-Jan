@@ -66,10 +66,38 @@ document.getElementById("clearFiltersBtn")
         document.getElementById("minScoreFilter").value = "";
 
         applyFiltersAndRender();
+        document.getElementById("typeFilter")
+    .addEventListener("change", applyFiltersAndRender);
+
+document.getElementById("statusFilter")
+    .addEventListener("change", applyFiltersAndRender);
+
+document.getElementById("minScoreFilter")
+    .addEventListener("input", applyFiltersAndRender);
     });
 
     // Eventos de los botones de ordenamiento
+document.querySelectorAll(".btn-sort")
+    .forEach(button => {
 
+        button.addEventListener("click", () => {
+
+            document.querySelectorAll(".btn-sort")
+                .forEach(btn =>
+                    btn.classList.remove("active")
+                );
+
+            button.classList.add("active");
+
+            const sortType =
+                button.dataset.sort;
+
+            sortAnime(sortType);
+
+            renderAnime();
+        });
+
+    });
 
     // Botón "Cargar más"
     document.getElementById("loadMoreBtn")
@@ -154,7 +182,51 @@ async function loadAnimeList() {
 ===================================================== */
 
 /* Añadir las funciones que consideréis necesarias*/
+function sortAnime(sortType) {
 
+    switch (sortType) {
+
+        case "titleAsc":
+
+            filteredAnime.sort((a, b) =>
+                a.title.localeCompare(b.title)
+            );
+
+            break;
+
+        case "titleDesc":
+
+            filteredAnime.sort((a, b) =>
+                b.title.localeCompare(a.title)
+            );
+
+            break;
+
+        case "scoreDesc":
+
+            filteredAnime.sort((a, b) =>
+                (b.score || 0) - (a.score || 0)
+            );
+
+            break;
+
+        case "scoreAsc":
+
+            filteredAnime.sort((a, b) =>
+                (a.score || 0) - (b.score || 0)
+            );
+
+            break;
+
+        case "popularity":
+
+            filteredAnime.sort((a, b) =>
+                a.popularity - b.popularity
+            );
+
+            break;
+    }
+}
 /* =====================================================
    Tarjetas de Anime
 ===================================================== */
@@ -226,7 +298,7 @@ function buildGenreFilters() {
 
         btn.textContent = genre.name;
 
-        btn.classList.add("genre-btn");
+        btn.classList.add("genre-tag");
 
         btn.addEventListener("click", () => {
 
@@ -247,7 +319,60 @@ function buildGenreFilters() {
 
 function applyFiltersAndRender() {
 
-    filteredAnime = [...allAnime];
+    const type =
+        document.getElementById("typeFilter").value;
+
+    const status =
+        document.getElementById("statusFilter").value;
+
+    const minScore =
+        parseFloat(
+            document.getElementById("minScoreFilter").value
+        ) || 0;
+
+    filteredAnime = allAnime.filter(anime => {
+
+        const matchesType =
+            !type || anime.type === type;
+
+        let matchesStatus = true;
+
+if (status === "airing") {
+
+    matchesStatus =
+        anime.status === "Currently Airing";
+}
+
+else if (status === "complete") {
+
+    matchesStatus =
+        anime.status === "Finished Airing";
+}
+
+else if (status === "upcoming") {
+
+    matchesStatus =
+        anime.status === "Not yet aired";
+}
+
+        const matchesScore =
+            (anime.score || 0) >= minScore;
+
+        const matchesGenres =
+
+            selectedGenres.size === 0 ||
+
+            anime.genres.some(genre =>
+                selectedGenres.has(genre.mal_id)
+            );
+
+        return (
+            matchesType &&
+            matchesStatus &&
+            matchesScore &&
+            matchesGenres
+        );
+    });
 
     displayedCount = ITEMS_PER_VIEW;
 
@@ -295,6 +420,12 @@ function createAnimeCard(anime) {
         <h3>${anime.title}</h3>
         <p>⭐ ${anime.score || "N/A"}</p>
     `;
+    
+card.addEventListener("click", () => {
+
+    window.location.href =
+        `detail.html?id=${anime.mal_id}`;
+});
 
     return card;
 }
