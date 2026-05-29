@@ -108,22 +108,31 @@ addWatchingBtn.addEventListener("click", () => {
 
     if (!exists) {
 
-       watching.push({
-    mal_id: anime.mal_id,
-    title: anime.title,
-    score: anime.score,
-    imageUrl: anime.images.jpg.image_url
-});
+    if (watching.length >= 10) {
 
-        localStorage.setItem(
-            "watching",
-            JSON.stringify(watching)
-        );
+        alert("Máximo 10 anime en Watching");
 
-        alert("Añadido a Watching");
-    } else {
-        alert("Ya está en Watching");
+        return;
     }
+
+    watching.push({
+        mal_id: anime.mal_id,
+        title: anime.title,
+        score: anime.score,
+        imageUrl: anime.images.jpg.image_url
+    });
+
+    localStorage.setItem(
+        "watching",
+        JSON.stringify(watching)
+    );
+
+    alert("Añadido a Watching");
+
+} else {
+
+    alert("Ya está en Watching");
+}
 
 });
 

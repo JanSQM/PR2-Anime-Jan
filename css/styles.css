@@ -629,4 +629,33 @@ header { position: sticky; top: 0; z-index: 100; }
 
 }
 
+.anime-card-content {
+    padding: 14px;
+}
 
+.anime-score {
+    color: #ffd166;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.anime-status {
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-bottom: 10px;
+}
+
+.anime-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.anime-genres span {
+    background: rgba(108, 99, 255, 0.15);
+    border: 1px solid var(--primary);
+    padding: 4px 8px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    color: var(--text);
+}

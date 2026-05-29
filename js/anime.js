@@ -421,6 +421,31 @@ function createAnimeCard(anime) {
         <p>⭐ ${anime.score || "N/A"}</p>
     `;
     
+card.innerHTML = `
+    <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
+
+    <div class="anime-card-content">
+
+        <h3>${anime.title}</h3>
+
+        <p class="anime-score">
+            ⭐ ${anime.score || "N/A"}
+        </p>
+
+        <p class="anime-status">
+            ${anime.status}
+        </p>
+
+        <div class="anime-genres">
+            ${anime.genres
+                .slice(0, 3)
+                .map(g => `<span>${g.name}</span>`)
+                .join("")}
+        </div>
+
+    </div>
+`;
+
 card.addEventListener("click", () => {
 
     window.location.href =
